@@ -19,8 +19,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         rv_notes.layoutManager = LinearLayoutManager(this)
-        rv_notes.adapter =
-            NotesAdapter(noteBox.all.sortedWith(compareBy { -it.timestamp }))
+        rv_notes.adapter = NotesAdapter(noteBox.all.sortedWith(compareBy { -it.timestamp }))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
