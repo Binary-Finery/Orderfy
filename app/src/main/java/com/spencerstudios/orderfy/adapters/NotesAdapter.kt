@@ -23,7 +23,7 @@ class NotesAdapter(private val items: List<Note>) : RecyclerView.Adapter<NotesAd
 
     override fun onBindViewHolder(v: ViewHolder, i: Int) {
         val it = items[i]
-        v.title.text = it.noteBody
+        v.title.text = it.noteBody.trim().split("\n")[0]
         v.timestamp.text = DateFormat.getDateInstance(DateFormat.FULL).format(it.timestamp)
         v.item.setOnClickListener { view ->
             val intent = Intent(view.context, NoteEditorActivity::class.java)

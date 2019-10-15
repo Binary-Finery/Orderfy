@@ -4,7 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import com.spencerstudios.orderfy.*
+import com.spencerstudios.orderfy.ObjectBox
+import com.spencerstudios.orderfy.R
 import com.spencerstudios.orderfy.adapters.NotesAdapter
 import com.spencerstudios.orderfy.models.Note
 import io.objectbox.kotlin.boxFor

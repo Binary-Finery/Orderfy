@@ -1,6 +1,7 @@
 package com.spencerstudios.orderfy
 
 import android.content.Context
+import com.spencerstudios.orderfy.models.MyObjectBox
 import io.objectbox.BoxStore
 
 object ObjectBox {

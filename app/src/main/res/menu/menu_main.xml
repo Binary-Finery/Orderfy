@@ -2,8 +2,16 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.spencerstudios.orderfy.activities.MainActivity">
-    <item android:id="@+id/action_settings"
-          android:title="@string/action_settings"
+
+    <item android:id="@+id/action_clear_text"
+          android:title="clear text"
           android:orderInCategory="100"
-          app:showAsAction="never"/>
+          app:showAsAction="never"
+          tools:ignore="HardcodedText"/>
+
+    <item android:id="@+id/action_delete_note"
+          android:title="delete note"
+          android:orderInCategory="100"
+          app:showAsAction="never"
+          tools:ignore="HardcodedText"/>
 </menu>
