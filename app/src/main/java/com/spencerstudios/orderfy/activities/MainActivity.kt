@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         noteBox.put(note)
         val intent = Intent(this, NoteEditorActivity::class.java)
         intent.putExtra("id", note.id)
+        intent.putExtra("isNewNote", true)
         startActivity(intent)
     }
 }

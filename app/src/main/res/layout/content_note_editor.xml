@@ -11,6 +11,7 @@
         tools:showIn="@layout/activity_note_editor"
         tools:context=".activities.NoteEditorActivity">
 
+
     <ScrollView android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fillViewport="true"
@@ -21,6 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="top"
+                android:inputType="textCapSentences|textMultiLine"
                 android:hint="enter text here...."
                 android:background="@android:color/transparent"
                 android:textColorHint="#929292"

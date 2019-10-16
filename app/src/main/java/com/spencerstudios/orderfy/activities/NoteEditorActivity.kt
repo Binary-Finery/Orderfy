@@ -10,6 +10,7 @@ import android.widget.Toast
 import com.spencerstudios.orderfy.ObjectBox
 import com.spencerstudios.orderfy.R
 import com.spencerstudios.orderfy.models.Note
+import com.spencerstudios.orderfy.utilities.TextUtils
 import io.objectbox.kotlin.boxFor
 import kotlinx.android.synthetic.main.activity_note_editor.*
 import kotlinx.android.synthetic.main.content_note_editor.*
@@ -25,14 +26,20 @@ class NoteEditorActivity : AppCompatActivity() {
         setContentView(R.layout.activity_note_editor)
         setSupportActionBar(toolbar)
 
-        val noteId = intent.getLongExtra("id", 0)
-        note = noteBox.get(noteId)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+
+        note = noteBox.get(intent.getLongExtra("id", 0))
         originalContent = note.noteBody
         et_note_body.setText(originalContent)
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
+        saveNote()
+    }
+
+    private fun saveNote() {
 
         val newContent = et_note_body.text.toString()
 
@@ -60,7 +67,32 @@ class NoteEditorActivity : AppCompatActivity() {
                 displayDeleteNoteDialog()
                 true
             }
+            R.id.action_share_note -> {
+                shareOrCopyNote(false)
+                true
+            }
+            R.id.action_copy_note -> {
+                shareOrCopyNote(true)
+                true
+            }
+            R.id.action_save_note -> {
+                saveNote()
+                true
+            }
+            android.R.id.home -> {
+                saveNote()
+                finish()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun shareOrCopyNote(isCopy: Boolean) {
+        val text = et_note_body.text.toString()
+        if (!text.isEmpty()) {
+            val utils = TextUtils(this, text)
+            if (isCopy) utils.copy() else utils.share()
         }
     }
 
@@ -88,5 +120,4 @@ class NoteEditorActivity : AppCompatActivity() {
         val dialog = builder.create()
         dialog.show()
     }
-
 }
