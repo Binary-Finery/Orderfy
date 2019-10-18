@@ -1,5 +1,10 @@
 <resources>
-    <string name="app_name">note.it</string>
+    <string name="app_name">Noted It</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_note_editor"/>
+    <string name="search_title">search view</string>
+    <string name="delete_note">delete note</string>
+    <string name="clear_text">clear text</string>
+    <string name="save_note">save note</string>
+    <string name="share_note">share note</string>
+    <string name="copy_note">copy note</string>
 </resources>

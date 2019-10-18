@@ -1,40 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context="com.spencerstudios.orderfy.activities.MainActivity">
+      tools:context="com.spencerstudios.orderfy.activities.NoteEditorActivity">
 
-    <item android:id="@+id/action_delete_note"
-          android:title="delete note"
-          android:orderInCategory="100"
-          app:showAsAction="always"
-          android:icon="@drawable/baseline_delete_white_24"
-          tools:ignore="AlwaysShowAction,HardcodedText"/>
-
-    <item android:id="@+id/action_clear_text"
-          android:title="clear text"
-          android:orderInCategory="100"
-          app:showAsAction="always"
-          android:icon="@drawable/baseline_clear_white_24"
-          tools:ignore="HardcodedText"/>
-
-    <item android:id="@+id/action_save_note"
-          android:title="clear text"
-          android:orderInCategory="100"
-          app:showAsAction="always"
-          android:icon="@drawable/baseline_save_white_24"
-          tools:ignore="HardcodedText"/>
-
-    <item android:id="@+id/action_share_note"
-          android:title="clear text"
-          android:orderInCategory="100"
-          app:showAsAction="always"
-          android:icon="@drawable/baseline_share_white_24"
-          tools:ignore="HardcodedText"/>
-
-    <item android:id="@+id/action_copy_note"
-          android:title="clear text"
-          android:orderInCategory="100"
-          app:showAsAction="always"
-          android:icon="@drawable/baseline_file_copy_white_24"
-          tools:ignore="HardcodedText"/>
+    <item android:id="@+id/search"
+          android:title="@string/search_title"
+          android:icon="@drawable/baseline_search_white_24"
+          app:showAsAction="collapseActionView|always"
+          app:actionViewClass="android.support.v7.widget.SearchView"/>
 </menu>

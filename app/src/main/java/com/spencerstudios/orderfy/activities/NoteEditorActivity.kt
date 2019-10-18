@@ -1,5 +1,6 @@
 package com.spencerstudios.orderfy.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -9,6 +10,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import com.spencerstudios.orderfy.ObjectBox
 import com.spencerstudios.orderfy.R
+import com.spencerstudios.orderfy.constants.Const
 import com.spencerstudios.orderfy.models.Note
 import com.spencerstudios.orderfy.utilities.TextUtils
 import io.objectbox.kotlin.boxFor
@@ -19,7 +21,9 @@ class NoteEditorActivity : AppCompatActivity() {
 
     private var noteBox = ObjectBox.boxStore.boxFor<Note>()
     private lateinit var note: Note
-    private lateinit var originalContent: String
+    private var originalContent: String = ""
+    private var isNewNote: Boolean = true
+    private var isSharedText: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,43 +32,59 @@ class NoteEditorActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.title = ""
 
-        note = noteBox.get(intent.getLongExtra("id", 0))
-        originalContent = note.noteBody
-        et_note_body.setText(originalContent)
-    }
+        val intent = intent
+        val action = intent.action
+        val type = intent.type
+        if ("android.intent.action.SEND" == action && type != null && "text/plain" == type) {
+            val sharedText = intent.getStringExtra("android.intent.extra.TEXT")
+            if (sharedText.isNotEmpty()) {
+                isNewNote = true
+                isSharedText = true
+                et_note_body.setText(sharedText)
+            }
+        }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        saveNote()
+        if (!isSharedText) {
+            isNewNote = intent.getBooleanExtra(Const.IS_NEW_NOTE_KEY, isNewNote)
+            if (!isNewNote) {
+                note = noteBox.get(intent.getLongExtra("id", 0))
+                originalContent = note.noteBody
+            }
+            et_note_body.setText(originalContent)
+        }
     }
 
     private fun saveNote() {
 
-        val newContent = et_note_body.text.toString()
+        val content = et_note_body.text.toString()
 
-        if (newContent != originalContent) {
-            note.noteBody = newContent
-            note.timestamp = System.currentTimeMillis()
+        if (content != originalContent) {
+            if (isNewNote)
+                note = Note()
+            note.noteBody = content
+            note.timestamp = dateNow()
             noteBox.put(note)
+            originalContent = content
             Toast.makeText(this@NoteEditorActivity, "note saved", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.menu_main, menu)
+        inflater.inflate(R.menu.menu_note, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_clear_text -> {
-                displayClearTextDialog()
+                if (hasContent()) displayClearTextDialog()
                 true
             }
             R.id.action_delete_note -> {
-                displayDeleteNoteDialog()
+                if (!isNewNote) displayDeleteNoteDialog()
                 true
             }
             R.id.action_share_note -> {
@@ -81,7 +101,7 @@ class NoteEditorActivity : AppCompatActivity() {
             }
             android.R.id.home -> {
                 saveNote()
-                finish()
+                navigateToHome()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -89,11 +109,10 @@ class NoteEditorActivity : AppCompatActivity() {
     }
 
     private fun shareOrCopyNote(isCopy: Boolean) {
-        val text = et_note_body.text.toString()
-        if (!text.isEmpty()) {
-            val utils = TextUtils(this, text)
+        if (hasContent()) {
+            val utils = TextUtils(this, et_note_body.text.toString())
             if (isCopy) utils.copy() else utils.share()
-        }
+        } else Toast.makeText(this, if (isCopy) "nothing to copy?" else "nothing to share?", Toast.LENGTH_SHORT).show()
     }
 
     private fun displayClearTextDialog() {
@@ -114,10 +133,28 @@ class NoteEditorActivity : AppCompatActivity() {
         builder.setMessage("are you sure?")
         builder.setPositiveButton(android.R.string.yes) { _, _ ->
             noteBox.remove(note)
-            finish()
+            navigateToHome()
         }
-        builder.setNegativeButton(android.R.string.no) { _, _ -> }
+        builder.setNegativeButton(android.R.string.no) { _, _ -> navigateToHome() }
         val dialog = builder.create()
         dialog.show()
+    }
+
+    override fun onBackPressed() {
+        saveNote()
+        navigateToHome()
+    }
+
+    private fun navigateToHome() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
+    }
+
+    private fun dateNow(): Long {
+        return System.currentTimeMillis()
+    }
+
+    private fun hasContent(): Boolean {
+        return et_note_body.text.isNotEmpty()
     }
 }
