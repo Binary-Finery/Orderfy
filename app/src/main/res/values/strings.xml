@@ -7,4 +7,5 @@
     <string name="save_note">save note</string>
     <string name="share_note">share note</string>
     <string name="copy_note">copy note</string>
+    <string name="search_note">find</string>
 </resources>

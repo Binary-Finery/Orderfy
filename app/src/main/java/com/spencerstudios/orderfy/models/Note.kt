@@ -7,5 +7,5 @@ import io.objectbox.annotation.Id
 data class Note(
     @Id var id: Long = 0,
     var noteBody: String = "",
-    var timestamp: Long = 0
+    var timestamp: Long = System.currentTimeMillis()
 )

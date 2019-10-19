@@ -1,12 +1,16 @@
 package com.spencerstudios.orderfy.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.widget.CheckBox
+import android.widget.EditText
 import android.widget.Toast
 import com.spencerstudios.orderfy.ObjectBox
 import com.spencerstudios.orderfy.R
@@ -24,6 +28,7 @@ class NoteEditorActivity : AppCompatActivity() {
     private var originalContent: String = ""
     private var isNewNote: Boolean = true
     private var isSharedText: Boolean = false
+    private var isInSearchMode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,6 +104,10 @@ class NoteEditorActivity : AppCompatActivity() {
                 saveNote()
                 true
             }
+            R.id.action_search_note -> {
+                if (hasContent()) displaySearchDialog()
+                true
+            }
             android.R.id.home -> {
                 saveNote()
                 navigateToHome()
@@ -140,9 +149,56 @@ class NoteEditorActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    @SuppressLint("InflateParams")
+    private fun displaySearchDialog() {
+        val builder = AlertDialog.Builder(this)
+
+        val v = LayoutInflater.from(this).inflate(R.layout.find_dialog, null)
+        val etFind = v.findViewById<EditText>(R.id.et_find_string)
+        val etReplace = v.findViewById<EditText>(R.id.et_replacement_string)
+        val cbCaseSensitive = v.findViewById<CheckBox>(R.id.cb_case_sensitive)
+
+        builder.setTitle("Search")
+        builder.setView(v)
+
+        builder.setPositiveButton("find") { _, _ ->
+            val target = etFind.text.toString()
+            if (target.isNotEmpty()) {
+                val txt: String = et_note_body.text.toString()
+                val utils = TextUtils(this@NoteEditorActivity, txt)
+                et_note_body.text = utils.find(target, cbCaseSensitive.isChecked)
+                isInSearchMode = true
+            }
+        }
+
+        builder.setNegativeButton("replace all") { _, _ ->
+            val target = etFind.text.toString()
+            val replace = etReplace.text.toString()
+
+            if (target.isNotEmpty() && replace.isNotEmpty()) {
+                val txt: String = et_note_body.text.toString()
+                val utils = TextUtils(this@NoteEditorActivity, txt)
+                et_note_body.setText(utils.replace(target, replace, cbCaseSensitive.isChecked))
+                isInSearchMode = true
+            }
+        }
+
+
+        builder.setNeutralButton(android.R.string.no) { _, _ -> }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
     override fun onBackPressed() {
-        saveNote()
-        navigateToHome()
+        if (isInSearchMode) {
+            et_note_body.setText(et_note_body.text.toString())
+            Toast.makeText(this, "highlighting removed", Toast.LENGTH_LONG).show()
+            isInSearchMode = false
+        } else {
+            saveNote()
+            navigateToHome()
+        }
     }
 
     private fun navigateToHome() {

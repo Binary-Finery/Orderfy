@@ -26,15 +26,18 @@ class NotesAdapter(private val items: List<Note>) : RecyclerView.Adapter<NotesAd
 
     override fun onBindViewHolder(v: ViewHolder, i: Int) {
         val item = items[i]
-        var text = item.noteBody
+        var text = item.noteBody.trim()
         if (text.isEmpty()) {
             text = Const.EMPTY_NOTE_RECYCLER_VIEW_ITEM_TITLE
             v.title.setTextColor(Color.RED)
-        } else
+        } else {
             text = item.noteBody.trim().split("\n")[0]
+            v.title.setTextColor(Color.BLACK)
+        }
 
         v.title.text = text
         v.timestamp.text = DateFormat.getDateInstance(DateFormat.FULL).format(item.timestamp)
+
         v.item.setOnClickListener { view ->
             val activity: MainActivity = view.context as MainActivity
             val intent = Intent(activity, NoteEditorActivity::class.java)

@@ -3,6 +3,13 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.spencerstudios.orderfy.activities.MainActivity">
 
+    <item android:id="@+id/action_search_note"
+          android:title="@string/search_note"
+          android:orderInCategory="100"
+          app:showAsAction="always"
+          android:icon="@drawable/baseline_search_white_24"
+          tools:ignore="AlwaysShowAction"/>
+
     <item android:id="@+id/action_delete_note"
           android:title="@string/delete_note"
           android:orderInCategory="100"
