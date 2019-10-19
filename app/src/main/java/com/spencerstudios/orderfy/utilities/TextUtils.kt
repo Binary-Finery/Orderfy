@@ -56,7 +56,7 @@ class TextUtils(
         val oldValLength = oldVal.length
         var qty = 0
         for (i in 0 until (builder.length - 1)) {
-            if (builder.substring(i, i + oldValLength) == oldVal) {
+            if (builder.substring(i, i.plus(oldValLength)) == oldVal) {
                 qty++
                 builder.replace(i, i.plus(oldValLength), replacementVal)
             }
