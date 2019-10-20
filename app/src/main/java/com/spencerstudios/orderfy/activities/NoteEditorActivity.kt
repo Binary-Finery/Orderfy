@@ -5,13 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import com.spencerstudios.orderfy.ObjectBox
 import com.spencerstudios.orderfy.R
 import com.spencerstudios.orderfy.constants.Const
@@ -26,17 +25,16 @@ class NoteEditorActivity : AppCompatActivity() {
     private var noteBox = ObjectBox.boxStore.boxFor<Note>()
     private lateinit var note: Note
     private var originalContent: String = ""
-    private var isNewNote: Boolean = true
+    private var isNewNote: Boolean = false
     private var isSharedText: Boolean = false
-    private var isInSearchMode = false
+    private var textSize: Int = Const.DEFAULT_TEXT_SIZE
+    private var hasSetTextSize: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_note_editor)
         setSupportActionBar(toolbar)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.title = ""
 
         val intent = intent
@@ -56,8 +54,12 @@ class NoteEditorActivity : AppCompatActivity() {
             if (!isNewNote) {
                 note = noteBox.get(intent.getLongExtra("id", 0))
                 originalContent = note.noteBody
+                textSize = note.textSize
+                setNoteTextSize()
             }
             et_note_body.setText(originalContent)
+        } else {
+            setNoteTextSize()
         }
     }
 
@@ -65,11 +67,12 @@ class NoteEditorActivity : AppCompatActivity() {
 
         val content = et_note_body.text.toString()
 
-        if (content != originalContent) {
+        if (content != originalContent || hasSetTextSize) {
             if (isNewNote)
                 note = Note()
             note.noteBody = content
             note.timestamp = dateNow()
+            note.textSize = textSize
             noteBox.put(note)
             originalContent = content
             Toast.makeText(this@NoteEditorActivity, "note saved", Toast.LENGTH_SHORT).show()
@@ -108,9 +111,8 @@ class NoteEditorActivity : AppCompatActivity() {
                 if (hasContent()) displaySearchDialog()
                 true
             }
-            android.R.id.home -> {
-                saveNote()
-                navigateToHome()
+            R.id.action_text_size -> {
+                displaySetTextSizeDialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -167,22 +169,23 @@ class NoteEditorActivity : AppCompatActivity() {
                 val txt: String = et_note_body.text.toString()
                 val utils = TextUtils(this@NoteEditorActivity, txt)
                 et_note_body.text = utils.find(target, cbCaseSensitive.isChecked)
-                isInSearchMode = true
             }
         }
 
         builder.setNegativeButton("replace all") { _, _ ->
-            val target = etFind.text.toString()
-            val replace = etReplace.text.toString()
+            try {
+                val target = etFind.text.toString()
+                val replace = etReplace.text.toString()
 
-            if (target.isNotEmpty() && replace.isNotEmpty()) {
-                val txt: String = et_note_body.text.toString()
-                val utils = TextUtils(this@NoteEditorActivity, txt)
-                et_note_body.setText(utils.replace(target, replace, cbCaseSensitive.isChecked))
-                isInSearchMode = true
+                if (target.isNotEmpty() && replace.isNotEmpty()) {
+                    val txt: String = et_note_body.text.toString()
+                    val utils = TextUtils(this@NoteEditorActivity, txt)
+                    et_note_body.setText(utils.replace(target, replace, cbCaseSensitive.isChecked))
+                }
+            } catch (ex: Exception) {
+                Toast.makeText(this@NoteEditorActivity, ex.message, Toast.LENGTH_LONG).show()
             }
         }
-
 
         builder.setNeutralButton(android.R.string.no) { _, _ -> }
 
@@ -190,15 +193,46 @@ class NoteEditorActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    override fun onBackPressed() {
-        if (isInSearchMode) {
-            et_note_body.setText(et_note_body.text.toString())
-            Toast.makeText(this, "highlighting removed", Toast.LENGTH_LONG).show()
-            isInSearchMode = false
-        } else {
-            saveNote()
-            navigateToHome()
+    @SuppressLint("InflateParams")
+    fun displaySetTextSizeDialog() {
+        val builder = AlertDialog.Builder(this)
+        val v = LayoutInflater.from(this).inflate(R.layout.text_size_dialog, null)
+        builder.setView(v)
+        builder.setTitle("Text Size")
+        val progress: TextView = v.findViewById(R.id.tv_size_in_sp)
+        val seekBar: SeekBar = v.findViewById(R.id.seek_text_size)
+        seekBar.progress = textSize
+        progress.text = "$textSize"
+        seekBar.max = 32
+        seekBar.incrementProgressBy(1)
+
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+                progress.text = "${i.plus(8)}"
+                hasSetTextSize = true
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // do nothing!
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                // do nothing!
+            }
+        })
+
+        builder.setPositiveButton("apply") { _, _ ->
+            textSize = seekBar.progress.plus(8)
+            setNoteTextSize()
         }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    override fun onBackPressed() {
+        saveNote()
+        navigateToHome()
     }
 
     private fun navigateToHome() {
@@ -211,6 +245,10 @@ class NoteEditorActivity : AppCompatActivity() {
     }
 
     private fun hasContent(): Boolean {
-        return et_note_body.text.isNotEmpty()
+        return et_note_body.text.trim().isNotEmpty()
+    }
+
+    private fun setNoteTextSize() {
+        et_note_body.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize.toFloat())
     }
 }

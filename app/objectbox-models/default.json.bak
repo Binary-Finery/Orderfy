@@ -4,39 +4,42 @@
   "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
   "entities": [
     {
-      "id": "1:30516688851942119",
-      "lastPropertyId": "4:2601797047962090528",
-      "name": "Category",
+      "id": "2:6906802603181626818",
+      "lastPropertyId": "3:7404087906807434331",
+      "name": "Note",
       "properties": [
         {
-          "id": "1:5206339667153664304",
+          "id": "1:8244647690403980591",
           "name": "id"
         },
         {
-          "id": "2:1986178712134284319",
-          "name": "name"
+          "id": "2:3297170426879932007",
+          "name": "noteBody"
         },
         {
-          "id": "3:8300862767589626267",
-          "name": "nextEvent"
-        },
-        {
-          "id": "4:2601797047962090528",
-          "name": "qtyOfEvents"
+          "id": "3:7404087906807434331",
+          "name": "timestamp"
         }
       ],
       "relations": []
     }
   ],
-  "lastEntityId": "1:30516688851942119",
+  "lastEntityId": "2:6906802603181626818",
   "lastIndexId": "0:0",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 4,
   "modelVersionParserMinimum": 4,
-  "retiredEntityUids": [],
+  "retiredEntityUids": [
+    30516688851942119
+  ],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredPropertyUids": [
+    5206339667153664304,
+    1986178712134284319,
+    8300862767589626267,
+    2601797047962090528
+  ],
   "retiredRelationUids": [],
   "version": 1
 }

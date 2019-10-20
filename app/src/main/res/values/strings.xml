@@ -8,4 +8,5 @@
     <string name="share_note">share note</string>
     <string name="copy_note">copy note</string>
     <string name="search_note">find</string>
+    <string name="text_size">text size</string>
 </resources>
